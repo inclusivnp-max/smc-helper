@@ -1,5 +1,14 @@
 # SMC Trading Platform & Helper
 
+<p align="left">
+  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21" />
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12" />
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
+  <img src="https://img.shields.io/badge/Architecture-Event--Driven%20Saga-blue?style=for-the-badge" alt="Event-Driven Saga" />
+  <img src="https://img.shields.io/badge/Trading-Smart%20Money%20Concepts-success?style=for-the-badge" alt="SMC Trading" />
+</p>
+
 Unified high-performance Smart Money Concepts (SMC) quantitative trading ecosystem.
 
 The platform consists of two specialized components:
