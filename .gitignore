@@ -1,0 +1,91 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller / PyTest / Ruff
+*.manifest
+*.spec
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+python-runtime/
+
+# Java / Gradle
+.gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+out/
+bin/
+.kotlin/
+*.class
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+.nb-gradle/
+
+# Secrets, Credentials, Local Configs
+*.env
+!.env.example
+*.properties
+!client/gradle/wrapper/gradle-wrapper.properties
+!client/gradle.properties
+!client/settings/*.properties.example
+!client/weights/*.properties
+credentials/
+*.db
+*.sqlite
+*.sqlite3
+
+# Local Market Data & Runtime Cache
+data-lake/
+tick-cache/
+backtests/
+closed-trades/*.csv
+closed-trades/*.xlsx
+decision-journal/*.jsonl
+execution-journal/*.jsonl
+model-governance/*.jsonl
+!**/.gitkeep
+
+# Operating System Files
+.DS_Store
+Thumbs.db

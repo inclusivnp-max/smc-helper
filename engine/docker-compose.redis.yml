@@ -1,0 +1,19 @@
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "always"]
+    expose:
+      - "6379"
+    networks:
+      - smc-backend
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  smc-backend:
+    name: smc-execution-backend
+    internal: true

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "state_backend": "sqlite-single-node",
+  "completed_at_ms": 0,
+  "passed": false,
+  "scenarios": {
+    "kill_before_submit": false,
+    "kill_after_submit_timeout": false,
+    "kill_after_partial_fill": false,
+    "kill_before_stop_ack": false,
+    "restart_reconciliation": false,
+    "backup_restore": false
+  }
+}

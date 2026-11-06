@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smc-execution-engine"
+version = "5.0.1"
+description = "Fail-closed execution platform with alpha research, walk-forward validation and operator dashboard"
+readme = "README_RU.md"
+requires-python = ">=3.11"
+authors = [{name = "SMC Helper"}]
+dependencies = [
+  "aiohttp>=3.10,<4",
+  "cryptography>=45,<47",
+  "websockets>=14,<17",
+]
+
+[project.optional-dependencies]
+redis = ["redis>=5.2,<7"]
+operator = [
+  "fastapi>=0.128,<1",
+  "uvicorn[standard]>=0.34,<1",
+]
+dev = [
+  "pytest>=8,<10",
+  "pytest-asyncio>=0.24,<2",
+  "pytest-cov>=7,<8",
+  "ruff>=0.15,<1",
+  "httpx>=0.28,<1",
+  "fastapi>=0.128,<1",
+  "uvicorn[standard]>=0.34,<1",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["smc_execution*"]
+
+[tool.setuptools.package-data]
+smc_execution = ["redis_lua/*.lua", "operator_ui/*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "binance_contract: opt-in Binance Demo/Testnet integration contract",
+]

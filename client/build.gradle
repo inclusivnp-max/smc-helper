@@ -1,0 +1,93 @@
+plugins {
+    id 'java'
+    id 'application'
+
+}
+
+group = 'app'
+version = '1.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+
+}
+
+application {
+    mainClass = 'app.SmcChartApp'
+}
+
+dependencies {
+    implementation 'net.java.dev.jna:jna-platform:5.14.0'
+    implementation 'com.formdev:flatlaf:3.5.4'
+    implementation 'com.miglayout:miglayout-swing:11.4.2'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+    runtimeOnly 'org.slf4j:slf4j-simple:2.0.16'
+
+    testImplementation platform('org.junit:junit-bom:5.10.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+            include 'app/**/*.java'
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.add('-Xlint:unchecked')
+}
+
+tasks.withType(JavaExec).configureEach {
+    standardInput = System.in
+    systemProperty 'org.slf4j.simpleLogger.defaultLogLevel', 'info'
+    systemProperty 'org.slf4j.simpleLogger.showShortLogName', 'true'
+}
+
+tasks.named('run', JavaExec) {
+    // AWT has no native Wayland backend (Java runs Swing apps through XWayland there); it has a
+    // long-documented compatibility issue with non-reparenting/scrolling-tiling window managers
+    // -- originally reported against i3, and niri is architecturally the same category (a
+    // scrolling tiling Wayland compositor) -- where AWT's assumptions about window reparenting
+    // cause exactly this kind of "the live-repainting window specifically gets laggy" symptom.
+    // This is the standard fix. It's a no-op (unused) on X11/other WMs and on Windows/macOS, so
+    // safe to always set for `./gradlew run`. If you launch a built jar directly instead, export
+    // the same variable in your shell/launcher before running it: `_JAVA_AWT_WM_NONREPARENTING=1
+    // java -jar ...` (or set it as an environment variable in your IDE run configuration).
+    environment '_JAVA_AWT_WM_NONREPARENTING', '1'
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.register('executionSafetySelfTest', JavaExec) {
+    group = 'verification'
+    description = 'Runs the built-in execution/risk safety self-test.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'app.execution.fix.ExecutionSafetySelfTest'
+}
+
+check.dependsOn tasks.named('executionSafetySelfTest')

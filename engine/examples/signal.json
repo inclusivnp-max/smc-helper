@@ -1,0 +1,8 @@
+{
+  "signal_id": "example-20260710-0001",
+  "symbol": "BTCUSDT",
+  "action": "LONG",
+  "confidence": "0.82",
+  "created_at_ms": 1783710000000,
+  "reference_price": "100000"
+}

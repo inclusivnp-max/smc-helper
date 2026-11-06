@@ -1,0 +1,22 @@
+[Unit]
+Description=SMC Chart license server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/smc-license
+Environment=LICENSE_HOST=127.0.0.1
+Environment=LICENSE_PORT=8787
+Environment=LICENSE_DB=/var/lib/smc-license/licenses.db
+ExecStart=/usr/bin/python3 /opt/smc-license/license_server.py
+Restart=always
+RestartSec=3
+User=smclic
+Group=smclic
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/smc-license
+
+[Install]
+WantedBy=multi-user.target

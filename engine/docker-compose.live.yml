@@ -1,0 +1,15 @@
+# Acceptance-staging override only. The current build rejects BINANCE_TESTNET=false
+# with LIVE_CAPITAL_STATUS=PROHIBITED_PENDING_ACCEPTANCE.
+services:
+  smc-execution:
+    environment:
+      BINANCE_TESTNET: "false"
+      SIGNAL_ENVIRONMENT: live
+      AUTO_SIGNAL_GENERATOR: "true"
+      ALLOW_LIVE_RESEARCH_PROMOTION: "false"
+      LIVE_CONFIG_FILE: /etc/smc-execution/live-authorization.json
+      LIVE_APPROVER_PUBLIC_KEYS_DIR: /etc/smc-execution/approvers
+    volumes:
+      - ./live/live-authorization.json:/etc/smc-execution/live-authorization.json:ro
+      - ./live/approvers:/etc/smc-execution/approvers:ro
+      - ./live/recovery-report.json:/var/lib/smc-execution/recovery-report.json:ro

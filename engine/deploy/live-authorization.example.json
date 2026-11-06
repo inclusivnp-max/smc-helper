@@ -1,0 +1,35 @@
+{
+  "authorization": {
+    "schema_version": 1,
+    "authorization_id": "<unique-authorization-id>",
+    "environment": "live",
+    "issued_at_ms": 0,
+    "not_before_ms": 0,
+    "expires_at_ms": 0,
+    "deployment_id": "<immutable-deployment-id>",
+    "subaccount_id": "<dedicated-live-subaccount-id>",
+    "symbols": ["BTCUSDT"],
+    "engine_code_fingerprint": "<sha256>",
+    "risk_profile": "CAPITAL_PROTECTION",
+    "risk_fingerprint": "<sha256>",
+    "state_backend": "sqlite-single-node",
+    "recovery_evidence": {
+      "report_file": "/var/lib/smc-execution/recovery-report.json",
+      "sha256": "<sha256>"
+    },
+    "approved_runs": [
+      {
+        "run_id": "<approved-run-id>",
+        "strategy_id": "<strategy-id>",
+        "strategy_version": "<strategy-version>",
+        "code_fingerprint": "<sha256>",
+        "dataset_fingerprint": "<sha256>"
+      }
+    ],
+    "approvers": [
+      {"operator_id": "<risk-operator>", "key_id": "risk-operator"},
+      {"operator_id": "<execution-operator>", "key_id": "execution-operator"}
+    ]
+  },
+  "signatures": []
+}

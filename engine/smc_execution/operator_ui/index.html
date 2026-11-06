@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>SMC Execution Control</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="loginOverlay" class="login-overlay">
+    <form id="loginForm" class="login-card" autocomplete="off">
+      <div class="brand-mark">SMC</div>
+      <h1>Execution Control</h1>
+      <p>Введите локальный Operator Token. Токен хранится только до закрытия вкладки.</p>
+      <label>Operator Token
+        <input id="tokenInput" type="password" minlength="20" required autocomplete="current-password">
+      </label>
+      <label>Имя оператора
+        <input id="actorInput" type="text" maxlength="80" value="operator">
+      </label>
+      <button type="submit" class="button primary full">Открыть консоль</button>
+      <div id="loginError" class="form-error"></div>
+    </form>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark small">SMC</div>
+        <div><strong>Execution</strong><span>Control v5</span></div>
+      </div>
+      <nav>
+        <a href="#overview" class="active">Обзор</a>
+        <a href="#modes">Режимы</a>
+        <a href="#research">Research</a>
+        <a href="#positions">Позиции</a>
+        <a href="#orders">Ордера</a>
+        <a href="#executions">Saga</a>
+        <a href="#audit">Аудит</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div id="environmentBadge" class="environment">BINANCE TESTNET — LIVE ЗАПРЕЩЁН</div>
+        <button id="logoutButton" class="button ghost full">Выйти</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">OPERATOR DASHBOARD</p>
+          <h1>Портфель и исполнение</h1>
+        </div>
+        <div class="top-status">
+          <span id="streamDot" class="status-dot"></span>
+          <span id="streamLabel">Нет соединения</span>
+          <span id="clock">—</span>
+        </div>
+      </header>
+
+      <section id="overview" class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">СОСТОЯНИЕ</p><h2>Контрольный центр</h2></div>
+          <div class="actions">
+            <button id="reconcileButton" class="button secondary">Сверить</button>
+            <button id="resumeButton" class="button success">Сверить и открыть входы</button>
+            <button id="haltButton" class="button danger">Остановить входы</button>
+          </div>
+        </div>
+
+        <div class="status-banner" id="admissionBanner">
+          <div><span class="status-dot"></span><strong id="admissionTitle">Загрузка…</strong></div>
+          <span id="admissionReason">—</span>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric-card"><span>Equity</span><strong id="equityMetric">—</strong><small>USDT</small></article>
+          <article class="metric-card"><span>Доступный баланс</span><strong id="availableMetric">—</strong><small>USDT</small></article>
+          <article class="metric-card"><span>Нереализованный P&amp;L</span><strong id="pnlMetric">—</strong><small>USDT</small></article>
+          <article class="metric-card"><span>Открытый риск</span><strong id="riskMetric">—</strong><small>USDT</small></article>
+          <article class="metric-card"><span>Risk ledger</span><strong id="ledgerMetric">—</strong><small>reserved + committed</small></article>
+          <article class="metric-card"><span>Текущий режим</span><strong id="modeMetric">—</strong><small id="modeRisk">—</small></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel chart-panel">
+            <div class="panel-head"><div><h3>Кривая equity</h3><p>Телеметрия operator layer</p></div><span id="chartPeriod">последние точки</span></div>
+            <canvas id="equityChart" height="250"></canvas>
+          </article>
+          <article class="panel health-panel">
+            <div class="panel-head"><div><h3>Health &amp; limits</h3><p>Fail-closed индикаторы</p></div></div>
+            <div class="health-list">
+              <div><span>Private stream</span><strong id="healthStream">—</strong></div>
+              <div><span>Открытые позиции</span><strong id="healthPositions">—</strong></div>
+              <div><span>Regular orders</span><strong id="healthRegular">—</strong></div>
+              <div><span>Algo orders</span><strong id="healthAlgo">—</strong></div>
+              <div><span>Незавершённые saga</span><strong id="healthSaga">—</strong></div>
+              <div><span>Дневная просадка</span><strong id="healthDailyLoss">—</strong></div>
+              <div><span>Peak drawdown</span><strong id="healthDrawdown">—</strong></div>
+              <div><span>Signal automation</span><strong id="healthAutomation">—</strong></div>
+              <div><span>Approved run</span><strong id="healthApprovedRun" class="mono">—</strong></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="modes" class="section">
+        <div class="section-head"><div><p class="eyebrow">ПОЛИТИКА РИСКА</p><h2>Режим работы</h2></div></div>
+        <div id="modeCards" class="mode-grid"></div>
+        <p class="notice">Смена активного профиля разрешается только при отсутствии позиций, открытых ордеров и незавершённых saga. «Безубыток» означает алгоритм защиты прибыли, а не гарантию нулевого убытка.</p>
+      </section>
+
+      <section id="research" class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">ALPHA VALIDATION</p><h2>Лаборатория стратегии</h2></div>
+          <div class="research-controls">
+            <select id="researchDataset" aria-label="Набор данных"><option value="">Выберите dataset</option></select>
+            <select id="researchMode" aria-label="Профиль симуляции">
+              <option value="CAPITAL_PROTECTION">Защита капитала</option>
+              <option value="BALANCED">Сбалансированный</option>
+              <option value="PROFITABILITY">Прибыльность</option>
+            </select>
+            <button id="researchRunButton" class="button primary">Запустить walk-forward</button>
+          </div>
+        </div>
+        <div id="researchUnavailable" class="notice hidden">Research service отключён в этой конфигурации.</div>
+        <div class="research-data-grid">
+          <article class="panel">
+            <div class="panel-head"><div><h3>Получение данных</h3><p>Публичные Binance USD-M данные, только закрытые свечи</p></div></div>
+            <div class="data-download-form">
+              <label>Символ<input id="dataSymbol" value="BTCUSDT" maxlength="30"></label>
+              <label>Интервал<select id="dataInterval"><option>5m</option><option>15m</option><option>30m</option><option>1h</option><option>2h</option><option>4h</option><option>6h</option><option>12h</option><option>1d</option></select></label>
+              <label>Начало (UTC)<input id="dataStart" type="date"></label>
+              <label>Конец (UTC)<input id="dataEnd" type="date"></label>
+              <button id="downloadDatasetButton" class="button secondary">Загрузить dataset</button>
+            </div>
+            <p class="microcopy">Mark price, funding и open interest запрашиваются при наличии. Отсутствующие исторические поля сохраняются как missing, а не подменяются будущими значениями.</p>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><h3>Data jobs</h3><p>Фоновая загрузка и fingerprint</p></div></div>
+            <div class="table-wrap compact-table"><table><thead><tr><th>Время</th><th>Рынок</th><th>Status</th><th>Rows</th><th>Dataset</th></tr></thead><tbody id="researchDataJobsBody"></tbody></table></div>
+          </article>
+        </div>
+        <div class="metric-grid research-metrics">
+          <article class="metric-card"><span>Alpha gate</span><strong id="researchGate">—</strong><small id="researchGateScore">нет отчёта</small></article>
+          <article class="metric-card"><span>OOS trades</span><strong id="researchTrades">—</strong><small>только test folds</small></article>
+          <article class="metric-card"><span>Expectancy</span><strong id="researchExpectancy">—</strong><small>R / сделку</small></article>
+          <article class="metric-card"><span>Profit factor</span><strong id="researchProfitFactor">—</strong><small>после costs</small></article>
+          <article class="metric-card"><span>Max drawdown</span><strong id="researchDrawdown">—</strong><small>OOS equity</small></article>
+          <article class="metric-card"><span>P(E&gt;0)</span><strong id="researchProbability">—</strong><small>block bootstrap</small></article>
+        </div>
+        <div class="research-grid">
+          <article class="panel">
+            <div class="panel-head"><div><h3>Research runs</h3><p>Нажмите на строку, чтобы открыть полный отчёт</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Создан</th><th>Run ID</th><th>Dataset</th><th>Стратегия</th><th>Status</th><th>Gate</th></tr></thead><tbody id="researchRunsBody"></tbody></table></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><h3>Причины решения</h3><p>Gate fail-closed</p></div></div>
+            <ul id="researchReasons" class="reason-list"><li>Выберите завершённый run.</li></ul>
+            <div class="research-actions">
+              <button id="promoteResearchButton" class="button success" disabled>Допустить в research</button>
+              <button id="promoteShadowButton" class="button secondary" disabled>Допустить в shadow</button>
+              <button id="promoteTestnetButton" class="button secondary" disabled>Допустить в testnet</button>
+            </div>
+          </article>
+        </div>
+        <div class="metric-grid shadow-metrics">
+          <article class="metric-card"><span>Shadow signals</span><strong id="shadowSignals">—</strong><small>forward only</small></article>
+          <article class="metric-card"><span>Shadow open</span><strong id="shadowOpen">—</strong><small>pending + open</small></article>
+          <article class="metric-card"><span>Shadow closed</span><strong id="shadowClosed">—</strong><small>required before testnet</small></article>
+          <article class="metric-card"><span>Shadow expectancy</span><strong id="shadowExpectancy">—</strong><small>R / closed trade</small></article>
+          <article class="metric-card"><span>Shadow win rate</span><strong id="shadowWinRate">—</strong><small>forward sample</small></article>
+        </div>
+        <div class="research-grid shadow-grid">
+          <article class="panel">
+            <div class="panel-head"><div><h3>Walk-forward folds</h3><p>Независимые OOS окна</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Fold</th><th>Test period</th><th>Trades</th><th>Expectancy</th><th>PF</th><th>Max DD</th></tr></thead><tbody id="researchFoldsBody"></tbody></table></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><h3>Последние shadow-сделки</h3><p>Durable forward journal</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Время</th><th>Рынок</th><th>Side</th><th>Status</th><th>R</th><th>Exit</th></tr></thead><tbody id="shadowTradesBody"></tbody></table></div>
+          </article>
+        </div>
+        <div class="dashboard-grid research-details">
+          <article class="panel">
+            <div class="panel-head"><div><h3>Baseline comparison</h3><p>Те же out-of-sample окна и модель издержек</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Модель</th><th>Trades</th><th>Expectancy R</th><th>PF</th><th>Return</th><th>Max DD</th></tr></thead><tbody id="researchBaselinesBody"></tbody></table></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><h3>Stress suite</h3><p>Fees, latency, slippage, missed fills</p></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Сценарий</th><th>Expectancy</th><th>PF</th><th>Max DD</th><th>Результат</th></tr></thead><tbody id="researchStressBody"></tbody></table></div>
+          </article>
+        </div>
+        <div class="table-wrap approvals-wrap"><table><thead><tr><th>Время</th><th>Стратегия</th><th>Stage</th><th>Environment</th><th>Run</th><th>Оператор</th><th>Причина</th></tr></thead><tbody id="researchApprovalsBody"></tbody></table></div>
+        <p class="notice">Alpha gate не разрешает live автоматически. Положительный backtest не является гарантией прибыли; dataset, код стратегии и параметры фиксируются fingerprint-ами.</p>
+      </section>
+
+      <section id="positions" class="section">
+        <div class="section-head">
+          <div><p class="eyebrow">EXPOSURE</p><h2>Открытые позиции</h2></div>
+          <button id="flattenButton" class="button danger-outline">Закрыть портфель</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Символ</th><th>Сторона</th><th>Количество</th><th>Вход</th><th>Mark</th><th>Notional</th><th>P&amp;L</th></tr></thead><tbody id="positionsBody"></tbody></table></div>
+      </section>
+
+      <section id="orders" class="section">
+        <div class="section-head"><div><p class="eyebrow">EXCHANGE STATE</p><h2>Активные ордера</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Kind</th><th>Символ</th><th>Тип</th><th>Сторона</th><th>Статус</th><th>Количество</th><th>Цена / trigger</th><th>Client ID</th></tr></thead><tbody id="ordersBody"></tbody></table></div>
+      </section>
+
+      <section id="executions" class="section">
+        <div class="section-head"><div><p class="eyebrow">DURABLE SAGA</p><h2>Исполнения</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Обновлено</th><th>Signal ID</th><th>Символ</th><th>Action</th><th>Stage</th><th>Режим</th><th>Результат</th></tr></thead><tbody id="executionsBody"></tbody></table></div>
+      </section>
+
+      <section id="audit" class="section">
+        <div class="section-head"><div><p class="eyebrow">OPERATOR AUDIT</p><h2>Журнал действий</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Время</th><th>Оператор</th><th>Действие</th><th>Результат</th><th>Детали</th></tr></thead><tbody id="auditBody"></tbody></table></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head"><h3 id="modalTitle">Подтверждение</h3><button id="modalClose" class="icon-button" aria-label="Закрыть">×</button></div>
+      <p id="modalText"></p>
+      <div id="modalExtra"></div>
+      <label id="modalInputLabel">Введите подтверждение
+        <input id="modalInput" type="text" autocomplete="off">
+      </label>
+      <div id="modalError" class="form-error"></div>
+      <div class="modal-actions"><button id="modalCancel" class="button ghost">Отмена</button><button id="modalConfirm" class="button danger">Подтвердить</button></div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
